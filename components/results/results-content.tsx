@@ -35,13 +35,21 @@ export function ResultsContent() {
         >
           <p className="text-sm text-muted-foreground">See detailed result</p>
           <div className="flex justify-center gap-2">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="default" asChild className="rounded-full">
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Button
+                variant="default"
+                asChild
+                className="rounded-full"
+              >
                 <Link href="/visualization">Visualization</Link>
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="default" asChild className="rounded-full">
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Button
+                variant="default"
+                asChild
+                className="rounded-full"
+              >
                 <Link href="/evaluation">Evaluation</Link>
               </Button>
             </motion.div>
@@ -55,8 +63,12 @@ export function ResultsContent() {
           transition={{ delay: 0.5, duration: 0.5 }}
         >
           <p className="text-sm text-muted-foreground mb-2">Or</p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="outline" asChild className="rounded-full">
+          <motion.div whileHover={{ scale: 1.05 }}>
+            <Button
+              variant="outline"
+              asChild
+              className="rounded-full"
+            >
               <Link href="/">Start New</Link>
             </Button>
           </motion.div>

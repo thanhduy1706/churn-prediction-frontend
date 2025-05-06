@@ -119,7 +119,6 @@ export function PredictionForm() {
           type="submit"
           className="px-8 py-2 rounded-full transition-all hover:scale-105 active:scale-95"
           disabled={isSubmitting}
-          whileTap={{ scale: 0.95 }}
         >
           {isSubmitting ? (
             <span className="flex items-center gap-2">

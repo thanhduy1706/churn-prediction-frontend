@@ -19,8 +19,13 @@ export function ConfusionMatrix() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.3 }}
       >
-        <motion.div whileHover={{ x: -5 }} whileTap={{ scale: 0.95 }}>
-          <Button variant="ghost" size="sm" asChild className="gap-1">
+        <motion.div whileHover={{ x: -5 }}>
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="gap-1"
+          >
             <Link href="/results">
               <ArrowLeft className="h-4 w-4" />
               Go back

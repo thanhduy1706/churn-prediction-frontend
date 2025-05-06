@@ -8,7 +8,6 @@ import { Providers } from "./providers"
 export const metadata: Metadata = {
   title: "Customer Churn Prediction",
   description: "Predict customer churn with machine learning",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -17,9 +16,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
       <body className={`${GeistSans.className} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <Providers>{children}</Providers>
         </ThemeProvider>
       </body>
