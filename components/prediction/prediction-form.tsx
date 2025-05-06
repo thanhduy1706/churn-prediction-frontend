@@ -5,7 +5,13 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
@@ -41,7 +47,12 @@ export function PredictionForm() {
     {
       label: "Payment Method",
       type: "select",
-      options: ["Electronic Check", "Mailed Check", "Bank Transfer", "Credit Card"],
+      options: [
+        "Electronic Check",
+        "Mailed Check",
+        "Bank Transfer",
+        "Credit Card",
+      ],
       placeholder: "Select Method",
     },
     {
@@ -50,16 +61,34 @@ export function PredictionForm() {
       options: ["Yes", "No", "No Internet Service"],
       placeholder: "Select Security",
     },
-    { label: "Internet Service", type: "select", options: ["DSL", "Fiber Optic", "No"], placeholder: "Select Service" },
+    {
+      label: "Internet Service",
+      type: "select",
+      options: ["DSL", "Fiber Optic", "No"],
+      placeholder: "Select Service",
+    },
     {
       label: "Tech Support",
       type: "select",
       options: ["Yes", "No", "No Internet Service"],
       placeholder: "Select Support",
     },
-    { label: "Paperless Billing", type: "select", options: ["Yes", "No"], placeholder: "Select Billing" },
-    { label: "Total Charges", type: "input", placeholder: "Type Total Charges..." },
-    { label: "Monthly Charges", type: "input", placeholder: "Type Monthly Charges..." },
+    {
+      label: "Paperless Billing",
+      type: "select",
+      options: ["Yes", "No"],
+      placeholder: "Select Billing",
+    },
+    {
+      label: "Total Charges",
+      type: "input",
+      placeholder: "Type Total Charges...",
+    },
+    {
+      label: "Monthly Charges",
+      type: "input",
+      placeholder: "Type Monthly Charges...",
+    },
     { label: "Tenure", type: "input", placeholder: "Type Tenure Value..." },
   ]
 
@@ -76,23 +105,48 @@ export function PredictionForm() {
 
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 300, damping: 24 },
+    },
   }
 
   return (
-    <motion.form onSubmit={handleSubmit} className="space-y-8" variants={container} initial="hidden" animate="show">
-      <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6" variants={container}>
+    <motion.form
+      onSubmit={handleSubmit}
+      className="space-y-8"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        variants={container}
+      >
         {formFields.map((field, index) => (
-          <motion.div key={index} className="space-y-2" variants={item}>
-            <label className="text-sm font-medium">{field.label}</label>
+          <motion.div
+            key={index}
+            className="space-y-2"
+            variants={item}
+          >
+            <label className="text-sm font-medium">
+              {field.label} <span className="text-red-500">*</span>
+            </label>
             {field.type === "select" ? (
-              <Select>
+              <Select
+                name={field.label.toLowerCase().replace(/\s+/g, "_")}
+                required
+              >
                 <SelectTrigger className="w-full transition-all hover:border-primary focus:ring-1 focus:ring-primary">
                   <SelectValue placeholder={field.placeholder} />
                 </SelectTrigger>
                 <SelectContent>
                   {field.options?.map((option, i) => (
-                    <SelectItem key={i} value={option.toLowerCase().replace(/\s+/g, "_")}>
+                    <SelectItem
+                      key={i}
+                      value={option.toLowerCase().replace(/\s+/g, "_")}
+                    >
                       {option}
                     </SelectItem>
                   ))}
@@ -100,8 +154,10 @@ export function PredictionForm() {
               </Select>
             ) : (
               <Input
+                name={field.label.toLowerCase().replace(/\s+/g, "_")}
                 type="number"
                 placeholder={field.placeholder}
+                required
                 className="transition-all hover:border-primary focus:ring-1 focus:ring-primary"
               />
             )}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import LoadingBar from "react-top-loading-bar"
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -16,6 +17,15 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [loadingProgress, setLoadingProgress] = useState(0)
+
+  useEffect(() => {
+    setLoadingProgress(30)
+    const timer = setTimeout(() => {
+      setLoadingProgress(100)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [pathname])
 
   const navLinks = (
     <>
@@ -79,6 +89,12 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
+      <LoadingBar
+        color="hsl(var(--primary))"
+        progress={loadingProgress}
+        onLoaderFinished={() => setLoadingProgress(0)}
+        className="z-50"
+      />
       <motion.header
         className="border-b"
         initial={{ opacity: 0, y: -20 }}
