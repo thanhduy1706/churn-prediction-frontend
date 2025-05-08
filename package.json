@@ -1,6 +1,6 @@
 {
   "name": "churn-prediction-frontend",
-  "version": "0.1.0",
+  "version": "1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
@@ -40,6 +41,7 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@reduxjs/toolkit": "latest",
     "@types/papaparse": "^5.3.16",
+    "antd": "^5.25.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -58,8 +60,9 @@
     "react-hook-form": "^7.54.1",
     "react-redux": "latest",
     "react-resizable-panels": "^2.1.7",
+    "react-spinners": "^0.17.0",
     "react-top-loading-bar": "^3.0.2",
-    "recharts": "latest",
+    "recharts": "^2.15.3",
     "redux": "latest",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",

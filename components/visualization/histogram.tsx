@@ -1,25 +1,30 @@
 "use client"
 
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
+  ResponsiveContainer,
 } from "recharts"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import Papa, { ParseResult } from "papaparse"
 
-interface PieChartProps {
+interface HistogramProps {
   csvData?: string
 }
 
 // Pastel color palette
-const COLORS = ["#FFB3BA", "#BAFFC9"] // Pastel pink for Yes, Pastel green for No
+const COLORS = {
+  bar: "#BAFFC9", // Pastel green
+  grid: "#E5E7EB", // Light gray for grid
+  text: "#4B5563", // Gray for text
+}
 
-export function PieChartComponent({ csvData }: PieChartProps) {
+export function HistogramComponent({ csvData }: HistogramProps) {
   const [isAnimating, setIsAnimating] = useState(false)
   const [chartData, setChartData] = useState<{ name: string; value: number }[]>(
     []
@@ -40,15 +45,11 @@ export function PieChartComponent({ csvData }: PieChartProps) {
               return acc
             }, {} as { [key: string]: number })
 
-            // Calculate percentages
-            const total = Object.values(churnCounts).reduce(
-              (sum, count) => sum + count,
-              0
-            )
+            // Format data for histogram
             const formattedData = Object.entries(churnCounts).map(
               ([name, value]) => ({
                 name: name.charAt(0).toUpperCase() + name.slice(1),
-                value: Math.round((value / total) * 100),
+                value,
               })
             )
 
@@ -56,7 +57,7 @@ export function PieChartComponent({ csvData }: PieChartProps) {
           }
         },
         error: (error: Error) => {
-          console.error("Error parsing CSV for pie chart:", error)
+          console.error("Error parsing CSV for histogram:", error)
         },
       })
     }
@@ -69,42 +70,39 @@ export function PieChartComponent({ csvData }: PieChartProps) {
   return (
     <motion.div
       className="w-full h-full"
-      initial={{ opacity: 0, rotate: -90 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{
         opacity: isAnimating ? 1 : 0,
-        rotate: isAnimating ? 0 : -90,
+        y: isAnimating ? 0 : 20,
       }}
-      transition={{ duration: 1, delay: 0.5 }}
+      transition={{ duration: 0.8, delay: 0.5 }}
     >
       <ResponsiveContainer
         width="100%"
         height="100%"
       >
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={({ name, value }) => `${name}: ${value}%`}
-            outerRadius={80}
-            fill="#8884d8"
-            dataKey="value"
-            animationDuration={1500}
-            animationBegin={300}
-            className="drop-shadow-md"
-          >
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-                stroke="#fff"
-                strokeWidth={2}
-              />
-            ))}
-          </Pie>
+        <BarChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={COLORS.grid}
+            vertical={false}
+          />
+          <XAxis
+            dataKey="name"
+            axisLine={{ stroke: COLORS.grid }}
+            tick={{ fill: COLORS.text }}
+            tickLine={{ stroke: COLORS.grid }}
+          />
+          <YAxis
+            axisLine={{ stroke: COLORS.grid }}
+            tick={{ fill: COLORS.text }}
+            tickLine={{ stroke: COLORS.grid }}
+          />
           <Tooltip
-            formatter={(value: number) => [`${value}%`, "Percentage"]}
+            formatter={(value: number) => [value, "Count"]}
             contentStyle={{
               backgroundColor: "rgba(255, 255, 255, 0.9)",
               borderRadius: "8px",
@@ -112,14 +110,15 @@ export function PieChartComponent({ csvData }: PieChartProps) {
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
           />
-          <Legend
-            verticalAlign="bottom"
-            height={36}
-            formatter={(value) => (
-              <span className="text-sm font-medium">{value}</span>
-            )}
+          <Bar
+            dataKey="value"
+            fill={COLORS.bar}
+            radius={[4, 4, 0, 0]}
+            animationDuration={1500}
+            animationBegin={300}
+            className="drop-shadow-md"
           />
-        </PieChart>
+        </BarChart>
       </ResponsiveContainer>
     </motion.div>
   )
