@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Search, Maximize2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Modal } from "antd"
+import { ConfigProvider, Modal, theme as antdTheme } from "antd"
 import { LoadingBar } from "@/components/ui/loading-bar"
 import { useTheme } from "next-themes"
 
@@ -30,6 +30,7 @@ export function DataTable({ csvData }: DataTableProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { theme } = useTheme()
   const ROWS_PER_PAGE = 10
+  const { darkAlgorithm, defaultAlgorithm } = antdTheme
 
   useEffect(() => {
     if (csvData) {
@@ -69,10 +70,9 @@ export function DataTable({ csvData }: DataTableProps) {
   const handleOpenModal = () => {
     setIsLoading(true)
     setIsModalOpen(true)
-    // Simulate loading time for large data
     setTimeout(() => {
       setIsLoading(false)
-    }, 500)
+    }, 800)
   }
 
   const container = {
@@ -157,7 +157,7 @@ export function DataTable({ csvData }: DataTableProps) {
         </Table>
       </div>
 
-      <div className="flex items-center justify-between p-4 border-t">
+      <div className="flex items-center justify-between p-2 border-t">
         <div className="text-sm text-muted-foreground">
           Showing {(currentPage - 1) * ROWS_PER_PAGE + 1} to{" "}
           {Math.min(currentPage * ROWS_PER_PAGE, filteredData.length)} of{" "}
@@ -188,64 +188,76 @@ export function DataTable({ csvData }: DataTableProps) {
         </div>
       </div>
 
-      <Modal
-        title="Full Table View"
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        width="90%"
-        footer={null}
-        className={theme === "dark" ? "dark" : ""}
-        styles={{
-          content: {
-            backgroundColor:
-              theme === "dark" ? "hsl(var(--background))" : "white",
-            color: theme === "dark" ? "hsl(var(--foreground))" : "black",
-          },
-          header: {
-            backgroundColor:
-              theme === "dark" ? "hsl(var(--background))" : "white",
-            color: theme === "dark" ? "hsl(var(--foreground))" : "black",
-            borderBottom: `1px solid ${
-              theme === "dark" ? "hsl(var(--border))" : "#e5e7eb"
-            }`,
+      <ConfigProvider
+        theme={{
+          algorithm: theme === "dark" ? darkAlgorithm : defaultAlgorithm,
+          components: {
+            Modal: {
+              contentBg: theme === "dark" ? "hsl(var(--background))" : "#fff",
+              headerBg: theme === "dark" ? "hsl(var(--background))" : "#fff",
+              colorText: theme === "dark" ? "hsl(var(--foreground))" : "rgba(0, 0, 0, 0.88)",
+              colorIcon: theme === "dark" ? "hsl(var(--foreground))" : "rgba(0, 0, 0, 0.88)",
+              colorIconHover: theme === "dark" ? "hsl(var(--primary))" : "#1677ff",
+            },
           },
         }}
       >
-        <LoadingBar loading={isLoading} />
-        <div className="overflow-x-auto mt-4">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {headers.map((header, index) => (
-                  <TableHead
-                    key={index}
-                    className="text-wrap text-xs"
-                  >
-                    {header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <tbody>
-              {filteredData.map((row, index) => (
-                <tr
-                  key={index}
-                  className="border-b hover:bg-muted/50"
-                >
-                  {headers.map((header, cellIndex) => (
-                    <TableCell
-                      key={cellIndex}
-                      className="whitespace-nowrap"
-                    >
-                      {row[header]}
-                    </TableCell>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      </Modal>
+        <Modal
+          title="Full Table View"
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          width="90%"
+          footer={null}
+          bodyStyle={{
+            padding: "16px",
+            maxHeight: "calc(100vh - 150px)",
+            overflow: "hidden",
+          }}
+        >
+          <div className={`mt-4 h-full ${theme === "dark" ? "text-foreground" : ""}`}>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <LoadingBar loading={true} width={150} height={6} speedMultiplier={1.5} />
+              </div>
+            ) : (
+              <div className={`${theme === "dark" ? "bg-background text-foreground" : ""}`} style={{ maxHeight: "calc(100vh - 200px)", overflow: "auto" }}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {headers.map((header, index) => (
+                        <TableHead
+                          key={index}
+                          className={`text-wrap text-xs ${theme === "dark" ? "bg-background text-foreground" : ""}`}
+                          style={{ position: "sticky", top: 0, zIndex: 1 }}
+                        >
+                          {header}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <tbody className={theme === "dark" ? "bg-background" : ""}>
+                    {filteredData.map((row, index) => (
+                      <tr
+                        key={index}
+                        className={`border-b hover:bg-muted/50 ${theme === "dark" ? "bg-background text-foreground" : ""}`}
+                      >
+                        {headers.map((header, cellIndex) => (
+                          <TableCell
+                            key={cellIndex}
+                            className={`whitespace-nowrap ${theme === "dark" ? "bg-background text-foreground" : ""}`}
+                          >
+                            {row[header]}
+                          </TableCell>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            )}
+          </div>
+        </Modal>
+      </ConfigProvider>
     </motion.div>
   )
 }

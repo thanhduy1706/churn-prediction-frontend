@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Legend,
   Tooltip,
+  TooltipProps,
 } from "recharts"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
@@ -16,14 +17,14 @@ interface PieChartProps {
   csvData?: string
 }
 
-// Pastel color palette
-const COLORS = ["#FFB3BA", "#BAFFC9"] // Pastel pink for Yes, Pastel green for No
+const COLORS = ["#fee4e5", "#edfcca"]
 
 export function PieChartComponent({ csvData }: PieChartProps) {
   const [isAnimating, setIsAnimating] = useState(false)
   const [chartData, setChartData] = useState<{ name: string; value: number }[]>(
     []
   )
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
     if (csvData) {
@@ -45,10 +46,13 @@ export function PieChartComponent({ csvData }: PieChartProps) {
               (sum, count) => sum + count,
               0
             )
+            setTotal(total)
+
             const formattedData = Object.entries(churnCounts).map(
               ([name, value]) => ({
                 name: name.charAt(0).toUpperCase() + name.slice(1),
-                value: Math.round((value / total) * 100),
+                value,
+                percentage: Math.round((value / total) * 100),
               })
             )
 
@@ -66,9 +70,34 @@ export function PieChartComponent({ csvData }: PieChartProps) {
     setIsAnimating(true)
   }, [])
 
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+    if (active && payload && payload.length) {
+      const item = payload[0];
+      const count = item.value as number;
+      const percentage = ((count / total) * 100).toFixed(1);
+      const isChurn = item.name === "Yes";
+
+      return (
+        <div className="bg-white/70 p-2 rounded-md shadow-md border border-gray-100 backdrop-blur-sm">
+          <p className="font-medium text-sm mb-1 text-gray-600 dark:text-gray-900">
+            {isChurn ? "Churned Customers" : "Retained Customers"}
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-900">
+            Count: <span className="font-semibold">{count}</span>
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-900">
+            Percentage: <span className="font-semibold">{percentage}%</span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <motion.div
-      className="w-full h-full"
+      className="flex h-[30vh] w-full"
       initial={{ opacity: 0, rotate: -90 }}
       animate={{
         opacity: isAnimating ? 1 : 0,
@@ -86,13 +115,13 @@ export function PieChartComponent({ csvData }: PieChartProps) {
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, value }) => `${name}: ${value}%`}
+            label={({ name, percentage }) => `${name}: ${percentage}%`}
             outerRadius={80}
             fill="#8884d8"
             dataKey="value"
             animationDuration={1500}
             animationBegin={300}
-            className="drop-shadow-md"
+            className="drop-shadow-lg"
           >
             {chartData.map((entry, index) => (
               <Cell
@@ -103,15 +132,7 @@ export function PieChartComponent({ csvData }: PieChartProps) {
               />
             ))}
           </Pie>
-          <Tooltip
-            formatter={(value: number) => [`${value}%`, "Percentage"]}
-            contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: "8px",
-              border: "none",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Legend
             verticalAlign="bottom"
             height={36}

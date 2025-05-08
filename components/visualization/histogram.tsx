@@ -8,6 +8,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
+  TooltipProps,
 } from "recharts"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
@@ -17,9 +19,14 @@ interface HistogramProps {
   csvData?: string
 }
 
-// Pastel color palette
+interface ChartDataItem {
+  name: string;
+  value: number;
+}
+
 const COLORS = {
-  bar: "#BAFFC9", // Pastel green
+  barYes: "#edfcca", // Pastel green
+  barNo: "#fee4e5", // Pastel pink
   grid: "#E5E7EB", // Light gray for grid
   text: "#4B5563", // Gray for text
 }
@@ -29,6 +36,7 @@ export function HistogramComponent({ csvData }: HistogramProps) {
   const [chartData, setChartData] = useState<{ name: string; value: number }[]>(
     []
   )
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
     if (csvData) {
@@ -53,6 +61,8 @@ export function HistogramComponent({ csvData }: HistogramProps) {
               })
             )
 
+            const totalCount = Object.values(churnCounts).reduce((sum, count) => sum + count, 0)
+            setTotal(totalCount)
             setChartData(formattedData)
           }
         },
@@ -66,6 +76,31 @@ export function HistogramComponent({ csvData }: HistogramProps) {
   useEffect(() => {
     setIsAnimating(true)
   }, [])
+
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+    if (active && payload && payload.length) {
+      const item = payload[0];
+      const count = item.value as number;
+      const percentage = ((count / total) * 100).toFixed(1);
+      const isChurn = label === "Yes";
+
+      return (
+        <div className="bg-white/70 p-2 rounded-md shadow-md border border-gray-100 backdrop-blur-sm">
+          <p className="font-medium text-sm mb-1 text-gray-600 dark:text-gray-900">
+            {isChurn ? "Churned Customers" : "Retained Customers"}
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-900">
+            Count: <span className="font-semibold">{count}</span>
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-900">
+            Percentage: <span className="font-semibold">{percentage}%</span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <motion.div
@@ -101,23 +136,21 @@ export function HistogramComponent({ csvData }: HistogramProps) {
             tick={{ fill: COLORS.text }}
             tickLine={{ stroke: COLORS.grid }}
           />
-          <Tooltip
-            formatter={(value: number) => [value, "Count"]}
-            contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: "8px",
-              border: "none",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Bar
             dataKey="value"
-            fill={COLORS.bar}
             radius={[4, 4, 0, 0]}
             animationDuration={1500}
             animationBegin={300}
             className="drop-shadow-md"
-          />
+          >
+            {chartData.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.name === "Yes" ? COLORS.barYes : COLORS.barNo}
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </motion.div>

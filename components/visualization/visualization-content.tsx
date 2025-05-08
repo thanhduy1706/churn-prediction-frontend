@@ -40,7 +40,7 @@ export function VisualizationContent() {
   }, [])
 
   return (
-    <div className="h-[90vh] flex flex-col">
+    <div className="flex flex-col">
       <motion.div
         className="flex-none px-6 py-4 border-b"
         initial={{ opacity: 0, y: -20 }}
@@ -60,7 +60,7 @@ export function VisualizationContent() {
             </Link>
           </Button>
           <h1 className="text-2xl font-semibold">Data Visualization</h1>
-          <div className="w-[100px]" /> {/* Spacer for balance */}
+          <div className="w-[100px]" />
         </div>
       </motion.div>
 
@@ -89,7 +89,7 @@ export function VisualizationContent() {
               </CardContent>
             </Card>
 
-            <Card className="h-full flex flex-col">
+            <Card className="h-[80vh] flex flex-col">
               <CardHeader className="flex-none">
                 <div className="flex items-center justify-between">
                   <CardTitle>Prediction Rate</CardTitle>
