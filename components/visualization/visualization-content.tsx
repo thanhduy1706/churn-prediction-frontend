@@ -1,96 +1,142 @@
-'use client';
+"use client"
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { DataTable } from '@/components/visualization/data-table';
-import { PieChartComponent } from '@/components/visualization/pie-chart';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { loadCSVFile } from '@/lib/utils/csv-loader';
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, PieChart, BarChart } from "lucide-react"
+import { DataTable } from "@/components/visualization/data-table"
+import { PieChartComponent } from "@/components/visualization/pie-chart"
+import { HistogramComponent } from "@/components/visualization/histogram"
+import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
+import { loadCSVFile } from "@/lib/utils/csv-loader"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
+
+type ChartType = "pie" | "histogram"
 
 export function VisualizationContent() {
-    const [csvData, setCsvData] = useState<string>('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [csvData, setCsvData] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [chartType, setChartType] = useState<ChartType>("pie")
 
-    useEffect(() => {
-        async function loadData() {
-            try {
-                setIsLoading(true);
-                const data = await loadCSVFile('churn_data.csv'); // Replace with your CSV filename
-                setCsvData(data);
-            } catch (err) {
-                setError(
-                    err instanceof Error ? err.message : 'Failed to load data'
-                );
-            } finally {
-                setIsLoading(false);
-            }
-        }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setIsLoading(true)
+        const data = await loadCSVFile("churn_data.csv")
+        setCsvData(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load data")
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-        loadData();
-    }, []);
+    loadData()
+  }, [])
 
-    return (
-        <motion.div
-            className='max-w-5xl mx-auto bg-card p-8 rounded-xl border shadow-sm dark:shadow-md'
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-        >
-            <motion.div
-                className='flex items-center mb-8'
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-            >
-                <motion.div whileHover={{ x: -5 }}>
-                    <Button variant='ghost' size='sm' asChild className='gap-1'>
-                        <Link href='/results'>
-                            <ArrowLeft className='h-4 w-4' />
-                            Go back
-                        </Link>
-                    </Button>
-                </motion.div>
-                <h2 className='text-2xl font-medium mx-auto'>Visualization</h2>
-            </motion.div>
+  return (
+    <div className="h-[90vh] flex flex-col">
+      <motion.div
+        className="flex-none px-6 py-4 border-b"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="container max-w-7xl mx-auto flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="gap-2 hover:bg-accent"
+          >
+            <Link href="/results">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Results
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-semibold">Data Visualization</h1>
+          <div className="w-[100px]" /> {/* Spacer for balance */}
+        </div>
+      </motion.div>
 
-            <motion.div
-                className='grid grid-cols-1 md:grid-cols-2 gap-8'
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-            >
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                    <h3 className='text-lg font-medium mb-4'>Dataset</h3>
-                    {isLoading ? (
-                        <div className='text-center py-4'>Loading data...</div>
-                    ) : error ? (
-                        <div className='text-red-500 text-center py-4'>
-                            {error}
-                        </div>
-                    ) : (
-                        <DataTable csvData={csvData} />
-                    )}
-                </motion.div>
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                    <h3 className='text-lg font-medium mb-4'>
-                        Prediction Rate
-                    </h3>
-                    <div className='flex items-center justify-center h-[300px]'>
-                        <PieChartComponent csvData={csvData} />
-                    </div>
-                </motion.div>
-            </motion.div>
-        </motion.div>
-    );
+      <div className="flex-1 overflow-hidden p-4">
+        <div className="container max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-9">
+            <Card className=" flex flex-col">
+              <CardHeader className="flex-none">
+                <CardTitle>Dataset Preview</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-auto">
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                ) : error ? (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                ) : (
+                  <DataTable csvData={csvData} />
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="h-full flex flex-col">
+              <CardHeader className="flex-none">
+                <div className="flex items-center justify-between">
+                  <CardTitle>Prediction Rate</CardTitle>
+                  <Tabs
+                    defaultValue={chartType}
+                    onValueChange={(value) => setChartType(value as ChartType)}
+                    className="w-[300px]"
+                  >
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger
+                        value="pie"
+                        className="flex items-center gap-2"
+                      >
+                        <PieChart className="h-4 w-4" />
+                        <span>Pie Chart</span>
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="histogram"
+                        className="flex items-center gap-2"
+                      >
+                        <BarChart className="h-4 w-4" />
+                        <span>Histogram</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1 flex items-center justify-center">
+                {isLoading ? (
+                  <Skeleton className="h-[calc(100%-2rem)] w-full" />
+                ) : error ? (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Failed to load visualization
+                    </AlertDescription>
+                  </Alert>
+                ) : chartType === "pie" ? (
+                  <PieChartComponent csvData={csvData} />
+                ) : (
+                  <HistogramComponent csvData={csvData} />
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
