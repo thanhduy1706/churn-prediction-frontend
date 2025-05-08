@@ -41,51 +41,44 @@ export function PredictionForm() {
 
     const formFields = [
         {
-            label: 'Multiple Lines',
-            type: 'select',
-            options: ['Yes', 'No', 'No Phone Service'],
-            placeholder: 'Select Lines',
-        },
-        {
-            label: 'Contract',
-            type: 'select',
-            options: ['Month-to-Month', 'One Year', 'Two Year'],
-            placeholder: 'Select Contract',
-        },
-        {
-            label: 'Payment Method',
-            type: 'select',
-            options: [
-                'Electronic Check',
-                'Mailed Check',
-                'Bank Transfer',
-                'Credit Card',
-            ],
-            placeholder: 'Select Method',
-        },
-        {
             label: 'Online Security',
             type: 'select',
-            options: ['Yes', 'No', 'No Internet Service'],
-            placeholder: 'Select Security',
+            options: ['Yes', 'No', 'No internet service'],
+            placeholder: 'Select Online Security',
+        },
+        {
+            label: 'Monthly Charges',
+            type: 'input',
+            placeholder: 'Type Monthly Charges...',
         },
         {
             label: 'Internet Service',
             type: 'select',
-            options: ['DSL', 'Fiber Optic', 'No'],
-            placeholder: 'Select Service',
+            options: ['DSL', 'Fiber optic', 'No'],
+            placeholder: 'Select Internet Service',
         },
         {
-            label: 'Tech Support',
-            type: 'select',
-            options: ['Yes', 'No', 'No Internet Service'],
-            placeholder: 'Select Support',
+            label: 'Tenure',
+            type: 'input',
+            placeholder: 'Type Tenure Value...',
         },
         {
-            label: 'Paperless Billing',
+            label: 'Contract',
             type: 'select',
-            options: ['Yes', 'No'],
-            placeholder: 'Select Billing',
+            options: ['Month-to-month', 'One year', 'Two year'],
+            placeholder: 'Select Contract',
+        },
+        {
+            label: 'StreamingTV',
+            type: 'select',
+            options: ['Yes', 'No', 'No internet service'],
+            placeholder: 'Select StreamingTV',
+        },
+        {
+            label: 'StreamingMovies',
+            type: 'select',
+            options: ['Yes', 'No', 'No internet service'],
+            placeholder: 'Select StreamingMovies',
         },
         {
             label: 'Total Charges',
@@ -93,11 +86,34 @@ export function PredictionForm() {
             placeholder: 'Type Total Charges...',
         },
         {
-            label: 'Monthly Charges',
-            type: 'input',
-            placeholder: 'Type Monthly Charges...',
+            label: 'Dependents',
+            type: 'select',
+            options: ['Yes', 'No'],
+            placeholder: 'Select Dependents',
         },
-        { label: 'Tenure', type: 'input', placeholder: 'Type Tenure Value...' },
+        {
+            label: 'Payment Method',
+            type: 'select',
+            options: [
+                'Electronic check',
+                'Mailed check',
+                'Bank transfer (automatic)',
+                'Credit card (automatic)',
+            ],
+            placeholder: 'Select Payment Method',
+        },
+        {
+            label: 'Paperless Billing',
+            type: 'select',
+            options: ['Yes', 'No'],
+            placeholder: 'Select Paperless Billing',
+        },
+        {
+            label: 'Tech Support',
+            type: 'select',
+            options: ['Yes', 'No', 'No internet service'],
+            placeholder: 'Select Tech Support',
+        },
     ];
 
     const container = {

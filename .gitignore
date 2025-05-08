@@ -25,4 +25,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-Customer-Churn-Prediction.csv
+Customer-Churn-Prediction_final.csv
