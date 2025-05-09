@@ -56,6 +56,12 @@ export function ResultsContent() {
                         {display}{' '}
                         {emoji && <span className='text-6xl'>{emoji}</span>}
                     </div>
+                    {result.churnProbability !== null && (
+                        <div className='text-lg text-muted-foreground'>
+                            Probability:{' '}
+                            {(result.churnProbability * 100).toFixed(2)}%
+                        </div>
+                    )}
                 </motion.div>
 
                 <motion.div
