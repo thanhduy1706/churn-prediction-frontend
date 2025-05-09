@@ -6,8 +6,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "./providers"
 
 export const metadata: Metadata = {
-  title: "Customer Churn Prediction",
+  title: "Customer Churn Prediction - HCMIU Project",
   description: "Predict customer churn with machine learning",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 }
 
 export default function RootLayout({
