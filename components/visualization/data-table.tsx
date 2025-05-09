@@ -163,90 +163,95 @@ export function DataTable({ csvData }: DataTableProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="p-2 border-b flex items-center justify-between">
-        <div className="relative flex-1 max-w-sm">
+      <div className="p-2 border-b flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="relative w-full sm:flex-1 sm:max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search in table..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
+            className="pl-8 w-full"
           />
         </div>
         <Button
           variant="outline"
           size="icon"
           onClick={handleOpenModal}
-          className="ml-2"
+          className="w-full sm:w-auto sm:ml-2"
         >
-          <Maximize2 className="h-4 w-4" />
+          <Maximize2 className="h-4 w-4 mr-2 sm:mr-0" />
+          <span className="sm:hidden">View Full Table</span>
         </Button>
       </div>
 
-      <div className="overflow-x-scroll">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {headers.map((header, index) => (
-                <TableHead
-                  key={index}
-                  className="text-wrap"
-                >
-                  {header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <motion.tbody
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            {paginatedData.map((row, index) => (
-              <motion.tr
-                key={index}
-                variants={item}
-                className="border-b hover:bg-muted/50"
-              >
-                {headers.map((header, cellIndex) => (
-                  <TableCell
-                    key={cellIndex}
-                    className="whitespace-nowrap"
+      <div className="overflow-x-auto scrollbar-thin">
+        <div className="min-w-full inline-block align-middle">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {headers.map((header, index) => (
+                  <TableHead
+                    key={index}
+                    className="text-wrap text-xs sm:text-sm"
                   >
-                    {row[header]}
-                  </TableCell>
+                    {header}
+                  </TableHead>
                 ))}
-              </motion.tr>
-            ))}
-          </motion.tbody>
-        </Table>
+              </TableRow>
+            </TableHeader>
+            <motion.tbody
+              variants={container}
+              initial="hidden"
+              animate="show"
+            >
+              {paginatedData.map((row, index) => (
+                <motion.tr
+                  key={index}
+                  variants={item}
+                  className="border-b hover:bg-muted/50"
+                >
+                  {headers.map((header, cellIndex) => (
+                    <TableCell
+                      key={cellIndex}
+                      className="whitespace-nowrap text-xs sm:text-sm py-2 px-3 sm:py-4 sm:px-4"
+                    >
+                      {row[header]}
+                    </TableCell>
+                  ))}
+                </motion.tr>
+              ))}
+            </motion.tbody>
+          </Table>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between p-2 border-t">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row items-center justify-between p-2 border-t gap-2">
+        <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left w-full sm:w-auto">
           Showing {(currentPage - 1) * ROWS_PER_PAGE + 1} to{" "}
           {Math.min(currentPage * ROWS_PER_PAGE, filteredData.length)} of{" "}
           {filteredData.length} entries
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
+            className="text-xs h-8 px-2 sm:px-3"
           >
             Previous
           </Button>
-          <div className="text-sm">
-            Page {currentPage} of {totalPages}
+          <div className="text-xs sm:text-sm">
+            Page {currentPage} of {totalPages || 1}
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages || 1))
             }
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="text-xs h-8 px-2 sm:px-3"
           >
             Next
           </Button>
@@ -278,28 +283,32 @@ export function DataTable({ csvData }: DataTableProps) {
           title="Full Table View"
           open={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
-          width="90%"
+          width={window && window.innerWidth < 640 ? "95%" : "90%"}
           footer={null}
           styles={{
             body: {
-              padding: "16px",
+              padding: "12px",
               maxHeight: "calc(100vh - 150px)",
               overflow: "hidden",
             },
+            header: {
+              padding: "16px 16px 8px 16px",
+            },
           }}
+          className="responsive-modal"
         >
           <div
             className={`h-full ${theme === "dark" ? "text-foreground" : ""}`}
           >
             {isFullTableLoading && displayedRows.length === 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-x-auto">
                 <div className="flex items-center space-x-4">
                   {headers.map((_, index) => (
                     <Skeleton.Input
                       key={index}
                       active
                       size="small"
-                      style={{ width: 120 }}
+                      style={{ width: 100 }}
                     />
                   ))}
                 </div>
@@ -313,7 +322,7 @@ export function DataTable({ csvData }: DataTableProps) {
                         key={colIndex}
                         active
                         size="small"
-                        style={{ width: 100 }}
+                        style={{ width: 80 }}
                       />
                     ))}
                   </div>
@@ -324,76 +333,81 @@ export function DataTable({ csvData }: DataTableProps) {
                 className={`${
                   theme === "dark" ? "bg-background text-foreground" : ""
                 }`}
-                style={{ maxHeight: "calc(100vh - 300px)", overflow: "auto" }}
+                style={{
+                  maxHeight: "calc(100vh - 200px)",
+                  overflow: "auto"
+                }}
               >
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {headers.map((header, index) => (
-                        <TableHead
-                          key={index}
-                          className={`text-wrap ${
-                            theme === "dark"
-                              ? "bg-background text-foreground"
-                              : "bg-background"
-                          }`}
-                          style={{
-                            zIndex: 10,
-                            backgroundColor:
-                              theme === "dark"
-                                ? "hsl(var(--background))"
-                                : "#fff",
-                            borderBottom: "1px solid hsl(var(--border))",
-                          }}
-                        >
-                          {header}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <tbody className={theme === "dark" ? "bg-background" : ""}>
-                    {displayedRows.map((row, index) => (
-                      <tr
-                        key={index}
-                        className={`border-b hover:bg-muted/50 ${
-                          theme === "dark"
-                            ? "bg-background text-foreground"
-                            : ""
-                        }`}
-                      >
-                        {headers.map((header, cellIndex) => (
-                          <TableCell
-                            key={cellIndex}
-                            className={`whitespace-nowrap ${
+                <div className="min-w-full inline-block align-middle overflow-x-auto scrollbar-thin">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {headers.map((header, index) => (
+                          <TableHead
+                            key={index}
+                            className={`text-wrap text-xs sm:text-sm sticky top-0 ${
                               theme === "dark"
                                 ? "bg-background text-foreground"
-                                : ""
+                                : "bg-background"
                             }`}
+                            style={{
+                              zIndex: 10,
+                              backgroundColor:
+                                theme === "dark"
+                                  ? "hsl(var(--background))"
+                                  : "#fff",
+                              borderBottom: "1px solid hsl(var(--border))",
+                            }}
                           >
-                            {row[header]}
-                          </TableCell>
+                            {header}
+                          </TableHead>
                         ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                {hasMore && (
-                  <div
-                    ref={observerTarget}
-                    className="h-10 flex items-center justify-center relative"
-                  >
-                    {isFullTableLoading && (
-                      <div className="w-full px-4 z-50 absolute bottom-0">
-                        <LoadingBar
-                          loading={true}
-                          width="100%"
-                          height={5}
-                          speedMultiplier={0.8}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
+                      </TableRow>
+                    </TableHeader>
+                    <tbody className={theme === "dark" ? "bg-background" : ""}>
+                      {displayedRows.map((row, index) => (
+                        <tr
+                          key={index}
+                          className={`border-b hover:bg-muted/50 ${
+                            theme === "dark"
+                              ? "bg-background text-foreground"
+                              : ""
+                          }`}
+                        >
+                          {headers.map((header, cellIndex) => (
+                            <TableCell
+                              key={cellIndex}
+                              className={`whitespace-nowrap text-xs sm:text-sm py-2 px-3 sm:py-4 sm:px-4 ${
+                                theme === "dark"
+                                  ? "bg-background text-foreground"
+                                  : ""
+                              }`}
+                            >
+                              {row[header]}
+                            </TableCell>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                  {hasMore && (
+                    <div
+                      ref={observerTarget}
+                      className="h-10 flex items-center justify-center relative"
+                    >
+                      {isFullTableLoading && (
+                        <div className="w-full px-4 z-50 absolute bottom-0">
+                          <LoadingBar
+                            loading={true}
+                            width="100%"
+                            height={5}
+                            speedMultiplier={0.8}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

@@ -222,10 +222,8 @@ export function PredictionForm() {
             initial='hidden'
             animate='show'
         >
-
-
             <motion.div
-                className='grid grid-cols-1 md:grid-cols-2 gap-2'
+                className='grid grid-cols-1 md:grid-cols-2 gap-2 gap-x-8'
                 variants={container}
             >
                 {formFields.map((field, index) => (
@@ -279,16 +277,15 @@ export function PredictionForm() {
             </motion.div>
 
             <motion.div
-                className='grid grid-cols-3 items-center mt-8 w-full'
+                className='grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 w-full'
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
             >
-                <div></div>
-                <div className="flex justify-center">
+                <div className="sm:col-start-2 flex justify-center">
                     <Button
                         type='submit'
-                        className='px-8 py-2 rounded-full transition-all hover:scale-110 active:scale-95 duration-300'
+                        className='w-full sm:w-auto px-8 py-2 rounded-full transition-all hover:scale-110 active:scale-95 duration-300'
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? (
@@ -301,12 +298,12 @@ export function PredictionForm() {
                         )}
                     </Button>
                 </div>
-                <div className="flex justify-end">
+                <div className="sm:col-start-3 flex justify-end">
                     <Button
                         type="button"
                         variant="outline"
                         onClick={fillRandomValues}
-                        className="flex items-center gap-2"
+                        className="w-full sm:w-auto flex items-center gap-2 justify-center"
                     >
                         <Dices className="h-4 w-4" />
                         Fill Random

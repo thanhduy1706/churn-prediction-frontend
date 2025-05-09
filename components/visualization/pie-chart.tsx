@@ -25,6 +25,18 @@ export function PieChartComponent({ csvData }: PieChartProps) {
     []
   )
   const [total, setTotal] = useState(0)
+  const [windowWidth, setWindowWidth] = useState(0)
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth)
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (csvData) {
@@ -95,6 +107,19 @@ export function PieChartComponent({ csvData }: PieChartProps) {
     return null;
   };
 
+  // Dynamically calculate chart dimensions based on screen size
+  const isMobile = windowWidth < 768;
+  const outerRadius = isMobile ? 100 : 180;
+  const innerRadius = isMobile ? 40 : 60;
+
+  // Custom label renderer that adapts to screen size
+  const renderLabel = (entry: any) => {
+    if (isMobile && entry.percentage < 10) {
+      return null; // Don't show small percentage labels on mobile
+    }
+    return `${entry.name}: ${entry.percentage}%`;
+  };
+
   return (
     <motion.div
       className="flex h-[45vh] w-full"
@@ -109,15 +134,15 @@ export function PieChartComponent({ csvData }: PieChartProps) {
         width="100%"
         height="100%"
       >
-        <PieChart>
+        <PieChart margin={isMobile ? { top: 0, right: 0, bottom: 30, left: 0 } : { top: 0, right: 0, bottom: 0, left: 0 }}>
           <Pie
             data={chartData}
             cx="50%"
             cy="50%"
-            labelLine={false}
-            label={({ name, percentage }) => `${name}: ${percentage}%`}
-            outerRadius={180}
-            innerRadius={60}
+            labelLine={!isMobile}
+            label={isMobile ? undefined : renderLabel}
+            outerRadius={outerRadius}
+            innerRadius={innerRadius}
             fill="#8884d8"
             dataKey="value"
             animationDuration={1500}
@@ -135,9 +160,10 @@ export function PieChartComponent({ csvData }: PieChartProps) {
           </Pie>
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            verticalAlign="bottom"
+            verticalAlign={isMobile ? "bottom" : "bottom"}
+            height={isMobile ? 36 : 48}
             formatter={(value) => (
-              <span className="font-medium inline-flex mt-8">{value}</span>
+              <span className={`font-medium inline-flex ${isMobile ? 'text-sm mt-4' : 'mt-8'}`}>{value}</span>
             )}
           />
         </PieChart>
