@@ -23,20 +23,56 @@ export function PredictionForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const dispatch = useDispatch();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Simulate API call and prediction result
-        setTimeout(() => {
-            // Simulate prediction: randomly Yes/No (replace with real logic)
-            const isChurn = Math.random() > 0.5;
-            dispatch(
-                setResult({ isChurn, churnProbability: isChurn ? 0.8 : 0.2 })
+        const formData = new FormData(e.target as HTMLFormElement);
+        const data = {
+            Dependents: formData.get('dependents') as string,
+            tenure: Number(formData.get('tenure')),
+            InternetService: formData.get('internet_service') as string,
+            OnlineSecurity: formData.get('online_security') as string,
+            TechSupport: formData.get('tech_support') as string,
+            StreamingTV: formData.get('streamingtv') as string,
+            StreamingMovies: formData.get('streamingmovies') as string,
+            Contract: formData.get('contract') as string,
+            PaperlessBilling: formData.get('paperless_billing') as string,
+            PaymentMethod: formData.get('payment_method') as string,
+            MonthlyCharges: Number(formData.get('monthly_charges')),
+            TotalCharges: Number(formData.get('total_charges')),
+        };
+
+        try {
+            const response = await fetch(
+                'https://churn-prediction-backend-440303738717.asia-southeast1.run.app/predict',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                }
             );
-            setIsSubmitting(false);
+
+            if (!response.ok) {
+                throw new Error('Prediction request failed');
+            }
+
+            const result = await response.json();
+            dispatch(
+                setResult({
+                    isChurn: result.result === 'Yes',
+                    churnProbability: result.probability,
+                })
+            );
             router.push('/results');
-        }, 1500);
+        } catch (error) {
+            console.error('Error making prediction:', error);
+            // You might want to show an error message to the user here
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const formFields = [

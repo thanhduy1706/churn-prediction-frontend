@@ -56,6 +56,14 @@ export function ResultsContent() {
                         {display}{' '}
                         {emoji && <span className='text-6xl'>{emoji}</span>}
                     </div>
+                    <div className='mt-4'>
+                        <p className='text-lg text-muted-foreground'>
+                            Churn Probability:
+                        </p>
+                        <p className='text-2xl font-semibold mt-2'>
+                            {((result.churnProbability ?? 0) * 100).toFixed(2)}%
+                        </p>
+                    </div>
                 </motion.div>
 
                 <motion.div
@@ -64,7 +72,9 @@ export function ResultsContent() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.5 }}
                 >
-                    <p className='text-sm text-muted-foreground mb-2'>Or</p>
+                    <p className='text-sm text-muted-foreground mb-2'>
+                        Start a new prediction
+                    </p>
                     <motion.div whileHover={{ scale: 1.05 }}>
                         <Button
                             variant='outline'
