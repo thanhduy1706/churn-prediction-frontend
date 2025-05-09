@@ -31,14 +31,18 @@ export function LoadingBar({
       className={`flex justify-center items-center ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: loading ? 1 : 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
     >
       <BarLoader
         color={color || defaultColor}
         loading={loading}
         height={height}
         width={width}
-        speedMultiplier={speedMultiplier}
+        speedMultiplier={0.8}
+        cssOverride={{
+          transition: "all 0.3s ease-in-out",
+          animationDuration: "1.2s",
+        }}
       />
     </motion.div>
   )
