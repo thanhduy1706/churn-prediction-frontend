@@ -32,9 +32,10 @@ export function ConfusionMatrix() {
             </Link>
           </Button>
         </motion.div>
-        <h2 className="text-2xl font-medium mx-auto">Confusion Matrix</h2>
       </motion.div>
 
+      <div className="flex-col justify-center items-center inline-flex w-full">
+          <h2 className="text-2xl font-medium mb-8">Confusion Matrix</h2>
       <motion.div
         className="flex justify-center"
         initial={{ opacity: 0, y: 20 }}
@@ -81,6 +82,7 @@ export function ConfusionMatrix() {
           </motion.div>
         </motion.div>
       </motion.div>
+      </div>
     </motion.div>
   )
 }

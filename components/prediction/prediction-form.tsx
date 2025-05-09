@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Dices } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { setResult } from '@/lib/redux/slices/predictionSlice';
 
@@ -22,6 +22,7 @@ export function PredictionForm() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const dispatch = useDispatch();
+    const formRef = useRef<HTMLFormElement>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,10 +70,50 @@ export function PredictionForm() {
             router.push('/results');
         } catch (error) {
             console.error('Error making prediction:', error);
-            // You might want to show an error message to the user here
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const fillRandomValues = () => {
+        if (!formRef.current) return;
+
+        // Helper function to get random item from array
+        const getRandomItem = (items: any[]) => items[Math.floor(Math.random() * items.length)];
+
+        // Helper function to get random number within range
+        const getRandomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        // Fill select fields
+        const selects = formRef.current.querySelectorAll('select');
+        selects.forEach(select => {
+            const options = Array.from(select.options).filter(opt => opt.value);
+            if (options.length) {
+                const randomOption = getRandomItem(options);
+                select.value = randomOption.value;
+                // Dispatch change event to trigger React's select component update
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+
+        // Fill number inputs
+        const inputs = formRef.current.querySelectorAll('input[type="number"]');
+        inputs.forEach(input => {
+            const name = (input as HTMLInputElement).name;
+            let value = 0;
+
+            if (name === 'monthly_charges') {
+                value = getRandomNumber(20, 120);
+            } else if (name === 'total_charges') {
+                value = getRandomNumber(100, 8000);
+            } else if (name === 'tenure') {
+                value = getRandomNumber(1, 72);
+            }
+
+            (input as HTMLInputElement).value = value.toString();
+            // Dispatch change event to trigger React's input component update
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
     };
 
     const formFields = [
@@ -174,14 +215,17 @@ export function PredictionForm() {
 
     return (
         <motion.form
+            ref={formRef}
             onSubmit={handleSubmit}
-            className='space-y-8'
+            className='space-y-6'
             variants={container}
             initial='hidden'
             animate='show'
         >
+
+
             <motion.div
-                className='grid grid-cols-1 md:grid-cols-2 gap-6'
+                className='grid grid-cols-1 md:grid-cols-2 gap-2'
                 variants={container}
             >
                 {formFields.map((field, index) => (
@@ -235,25 +279,39 @@ export function PredictionForm() {
             </motion.div>
 
             <motion.div
-                className='flex justify-center mt-8'
+                className='grid grid-cols-3 items-center mt-8 w-full'
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
             >
-                <Button
-                    type='submit'
-                    className='px-8 py-2 rounded-full transition-all hover:scale-105 active:scale-95'
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <span className='flex items-center gap-2'>
-                            <Loader2 className='h-4 w-4 animate-spin' />
-                            Processing...
-                        </span>
-                    ) : (
-                        'Predict'
-                    )}
-                </Button>
+                <div></div>
+                <div className="flex justify-center">
+                    <Button
+                        type='submit'
+                        className='px-8 py-2 rounded-full transition-all hover:scale-110 active:scale-95 duration-300'
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <span className='flex items-center gap-2'>
+                                <Loader2 className='h-4 w-4 animate-spin' />
+                                Processing...
+                            </span>
+                        ) : (
+                            'Predict'
+                        )}
+                    </Button>
+                </div>
+                <div className="flex justify-end">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={fillRandomValues}
+                        className="flex items-center gap-2"
+                    >
+                        <Dices className="h-4 w-4" />
+                        Fill Random
+                    </Button>
+                </div>
             </motion.div>
         </motion.form>
     );

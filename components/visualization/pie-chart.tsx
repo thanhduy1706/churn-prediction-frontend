@@ -97,7 +97,7 @@ export function PieChartComponent({ csvData }: PieChartProps) {
 
   return (
     <motion.div
-      className="flex h-[30vh] w-full"
+      className="flex h-[45vh] w-full"
       initial={{ opacity: 0, rotate: -90 }}
       animate={{
         opacity: isAnimating ? 1 : 0,
@@ -116,7 +116,8 @@ export function PieChartComponent({ csvData }: PieChartProps) {
             cy="50%"
             labelLine={false}
             label={({ name, percentage }) => `${name}: ${percentage}%`}
-            outerRadius={80}
+            outerRadius={180}
+            innerRadius={60}
             fill="#8884d8"
             dataKey="value"
             animationDuration={1500}
@@ -128,16 +129,15 @@ export function PieChartComponent({ csvData }: PieChartProps) {
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
                 stroke="#fff"
-                strokeWidth={2}
+                strokeWidth={1}
               />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
           <Legend
             verticalAlign="bottom"
-            height={36}
             formatter={(value) => (
-              <span className="text-sm font-medium">{value}</span>
+              <span className="font-medium inline-flex mt-8">{value}</span>
             )}
           />
         </PieChart>
