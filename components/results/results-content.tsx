@@ -13,11 +13,11 @@ export function ResultsContent() {
     let display, color, emoji;
     if (result.isChurn === true) {
         display = 'Yes';
-        color = 'text-[#1E8181]';
+        color = 'text-[#CE7216]';
         emoji = '😞';
     } else if (result.isChurn === false) {
         display = 'No';
-        color = 'text-[#CE7216]';
+        color = 'text-[#1E8181]';
         emoji = '😊';
     } else {
         display = '-';
