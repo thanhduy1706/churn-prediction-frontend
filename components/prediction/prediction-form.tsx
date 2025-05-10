@@ -30,19 +30,22 @@ export function PredictionForm() {
 
         const formData = new FormData(e.target as HTMLFormElement);
         const data = {
-            Dependents: formData.get('dependents') as string,
+            Dependents: formData.get('Dependents') as string,
             tenure: Number(formData.get('tenure')),
-            InternetService: formData.get('internet_service') as string,
-            OnlineSecurity: formData.get('online_security') as string,
-            TechSupport: formData.get('tech_support') as string,
-            StreamingTV: formData.get('streamingtv') as string,
-            StreamingMovies: formData.get('streamingmovies') as string,
-            Contract: formData.get('contract') as string,
-            PaperlessBilling: formData.get('paperless_billing') as string,
-            PaymentMethod: formData.get('payment_method') as string,
-            MonthlyCharges: Number(formData.get('monthly_charges')),
-            TotalCharges: Number(formData.get('total_charges')),
+            InternetService: formData.get('InternetService') as string,
+            OnlineSecurity: formData.get('OnlineSecurity') as string,
+            TechSupport: formData.get('TechSupport') as string,
+            StreamingTV: formData.get('StreamingTV') as string,
+            StreamingMovies: formData.get('StreamingMovies') as string,
+            Contract: formData.get('Contract') as string,
+            PaperlessBilling: formData.get('PaperlessBilling') as string,
+            PaymentMethod: formData.get('PaymentMethod') as string,
+            MonthlyCharges: Number(formData.get('MonthlyCharges')),
+            TotalCharges: Number(formData.get('TotalCharges')),
         };
+
+        // Log the data being sent
+        console.log('Sending data to backend:', data);
 
         try {
             const response = await fetch(
@@ -61,6 +64,8 @@ export function PredictionForm() {
             }
 
             const result = await response.json();
+            console.log('Received response:', result); // Log the response
+
             dispatch(
                 setResult({
                     isChurn: result.result === 'Yes',
@@ -79,15 +84,19 @@ export function PredictionForm() {
         if (!formRef.current) return;
 
         // Helper function to get random item from array
-        const getRandomItem = (items: any[]) => items[Math.floor(Math.random() * items.length)];
+        const getRandomItem = (items: any[]) =>
+            items[Math.floor(Math.random() * items.length)];
 
         // Helper function to get random number within range
-        const getRandomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const getRandomNumber = (min: number, max: number) =>
+            Math.floor(Math.random() * (max - min + 1)) + min;
 
         // Fill select fields
         const selects = formRef.current.querySelectorAll('select');
-        selects.forEach(select => {
-            const options = Array.from(select.options).filter(opt => opt.value);
+        selects.forEach((select) => {
+            const options = Array.from(select.options).filter(
+                (opt) => opt.value
+            );
             if (options.length) {
                 const randomOption = getRandomItem(options);
                 select.value = randomOption.value;
@@ -98,13 +107,13 @@ export function PredictionForm() {
 
         // Fill number inputs
         const inputs = formRef.current.querySelectorAll('input[type="number"]');
-        inputs.forEach(input => {
+        inputs.forEach((input) => {
             const name = (input as HTMLInputElement).name;
             let value = 0;
 
-            if (name === 'monthly_charges') {
+            if (name === 'MonthlyCharges') {
                 value = getRandomNumber(20, 120);
-            } else if (name === 'total_charges') {
+            } else if (name === 'TotalCharges') {
                 value = getRandomNumber(100, 8000);
             } else if (name === 'tenure') {
                 value = getRandomNumber(1, 72);
@@ -119,57 +128,67 @@ export function PredictionForm() {
     const formFields = [
         {
             label: 'Online Security',
+            name: 'OnlineSecurity',
             type: 'select',
             options: ['Yes', 'No', 'No internet service'],
             placeholder: 'Select Online Security',
         },
         {
             label: 'Monthly Charges',
+            name: 'MonthlyCharges',
             type: 'input',
             placeholder: 'Type Monthly Charges...',
         },
         {
             label: 'Internet Service',
+            name: 'InternetService',
             type: 'select',
             options: ['DSL', 'Fiber optic', 'No'],
             placeholder: 'Select Internet Service',
         },
         {
             label: 'Tenure',
+            name: 'tenure',
             type: 'input',
             placeholder: 'Type Tenure Value...',
         },
         {
             label: 'Contract',
+            name: 'Contract',
             type: 'select',
             options: ['Month-to-month', 'One year', 'Two year'],
             placeholder: 'Select Contract',
         },
         {
-            label: 'StreamingTV',
+            label: 'Streaming TV',
+            name: 'StreamingTV',
             type: 'select',
             options: ['Yes', 'No', 'No internet service'],
-            placeholder: 'Select StreamingTV',
+            placeholder: 'Select Streaming TV',
         },
         {
-            label: 'StreamingMovies',
+            label: 'Streaming Movies',
+            name: 'StreamingMovies',
             type: 'select',
             options: ['Yes', 'No', 'No internet service'],
-            placeholder: 'Select StreamingMovies',
+            placeholder: 'Select Streaming Movies',
         },
         {
             label: 'Total Charges',
+            name: 'TotalCharges',
             type: 'input',
             placeholder: 'Type Total Charges...',
         },
         {
             label: 'Dependents',
+            name: 'Dependents',
             type: 'select',
             options: ['Yes', 'No'],
             placeholder: 'Select Dependents',
         },
         {
             label: 'Payment Method',
+            name: 'PaymentMethod',
             type: 'select',
             options: [
                 'Electronic check',
@@ -181,12 +200,14 @@ export function PredictionForm() {
         },
         {
             label: 'Paperless Billing',
+            name: 'PaperlessBilling',
             type: 'select',
             options: ['Yes', 'No'],
             placeholder: 'Select Paperless Billing',
         },
         {
             label: 'Tech Support',
+            name: 'TechSupport',
             type: 'select',
             options: ['Yes', 'No', 'No internet service'],
             placeholder: 'Select Tech Support',
@@ -237,12 +258,7 @@ export function PredictionForm() {
                             <span className='text-red-500'>*</span>
                         </label>
                         {field.type === 'select' ? (
-                            <Select
-                                name={field.label
-                                    .toLowerCase()
-                                    .replace(/\s+/g, '_')}
-                                required
-                            >
+                            <Select name={field.name} required>
                                 <SelectTrigger className='w-full transition-all hover:border-primary focus:ring-1 focus:ring-primary'>
                                     <SelectValue
                                         placeholder={field.placeholder}
@@ -250,12 +266,7 @@ export function PredictionForm() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {field.options?.map((option, i) => (
-                                        <SelectItem
-                                            key={i}
-                                            value={option
-                                                .toLowerCase()
-                                                .replace(/\s+/g, '_')}
-                                        >
+                                        <SelectItem key={i} value={option}>
                                             {option}
                                         </SelectItem>
                                     ))}
@@ -263,9 +274,7 @@ export function PredictionForm() {
                             </Select>
                         ) : (
                             <Input
-                                name={field.label
-                                    .toLowerCase()
-                                    .replace(/\s+/g, '_')}
+                                name={field.name}
                                 type='number'
                                 placeholder={field.placeholder}
                                 required
@@ -282,7 +291,7 @@ export function PredictionForm() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
             >
-                <div className="sm:col-start-2 flex justify-center">
+                <div className='sm:col-start-2 flex justify-center'>
                     <Button
                         type='submit'
                         className='w-full sm:w-auto px-8 py-2 rounded-full transition-all hover:scale-110 active:scale-95 duration-300'
@@ -298,14 +307,14 @@ export function PredictionForm() {
                         )}
                     </Button>
                 </div>
-                <div className="sm:col-start-3 flex justify-end">
+                <div className='sm:col-start-3 flex justify-end'>
                     <Button
-                        type="button"
-                        variant="outline"
+                        type='button'
+                        variant='outline'
                         onClick={fillRandomValues}
-                        className="w-full sm:w-auto flex items-center gap-2 justify-center"
+                        className='w-full sm:w-auto flex items-center gap-2 justify-center'
                     >
-                        <Dices className="h-4 w-4" />
+                        <Dices className='h-4 w-4' />
                         Fill Random
                     </Button>
                 </div>
