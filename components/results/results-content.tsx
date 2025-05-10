@@ -8,6 +8,8 @@ import type { RootState } from '@/lib/redux/store';
 
 export function ResultsContent() {
     const result = useSelector((state: RootState) => state.prediction.result);
+    console.log('Current prediction result:', result);
+
     let display, color, emoji;
     if (result.isChurn === true) {
         display = 'Yes';
